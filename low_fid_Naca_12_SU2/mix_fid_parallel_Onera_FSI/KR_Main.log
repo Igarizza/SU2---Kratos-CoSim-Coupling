@@ -1,0 +1,49 @@
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 9.3."1"-cosim/default_wrapper-66a1858fa7-Release-x86_64
+           Compiled for GNU/Linux and Python3.10 with GCC-11.4
+Compiled with threading and MPI support.
+Maximum number of threads: 30.
+Running without MPI.
+Importing    KratosCoSimulationApplication 
+    KRATOS  / ___|___/ ___|(_)_ __ ___  _   _| | __ _| |_(_) ___  _ __
+           | |   / _ \___ \| | '_ ` _ \| | | | |/ _` | __| |/ _ \| '_ \
+           | |__| (_) |__) | | | | | | | |_| | | (_| | |_| | (_) | | | |
+            \____\___/____/|_|_| |_| |_|\__,_|_|\__,_|\__|_|\___/|_| |_|
+Initializing KratosCoSimulationApplication...
+Importing    KratosStatisticsApplication 
+    Kratos  ____  _        _   _     _   _
+           / ___|| |_ __ _| |_(_)___| |_(_) ___ ___
+           \___ \| __/ _` | __| / __| __| |/ __/ __|
+            ___) | || (_| | |_| \__ \ |_| | (__\__ \
+           |____/ \__\__,_|\__|_|___/\__|_|\___|___/ Application
+Initializing KratosStatisticsApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+[1;1mCoSimTools[0m: Created ModelPart "S_Node" for solver "FSI" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_DISPLACEMENT" in ModelPart "S_Node" for solver "FSI" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_FORCE" in ModelPart "S_Node" for solver "FSI" 
+[1;1mCoSimTools[0m: Created ModelPart "S_Node_2" for solver "spring" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_DISPLACEMENT" in ModelPart "S_Node_2" for solver "spring" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_FORCE" in ModelPart "S_Node_2" for solver "spring" 
+CoSimIO: CoSimIO from "FSI" to "External_FSI" uses communication format: file
+CoSimIO: CoSimIO from "spring" to "run_structure" uses communication format: file
+None
+Importing    KratosMappingApplication 
+    KRATOS ______  ___                      _____
+           ___   |/  /_____ ___________________(_)_____________ _
+           __  /|_/ /_  __ `/__  __ \__  __ \_  /__  __ \_  __ `/
+           _  /  / / / /_/ /__  /_/ /_  /_/ /  / _  / / /  /_/ /
+           /_/  /_/  \__,_/ _  .___/_  .___//_/  /_/ /_/_\__, /
+                            /_/     /_/                 /____/
+Initializing KratosMappingApplication...
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solver does not implement Check!!! 
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solver does not implement Check!!! 
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solver does not implement Check!!! 
+[WARNING] [1;1mConvergence Accelerator[0m: The convergence accelerators do not yet implement Check! 

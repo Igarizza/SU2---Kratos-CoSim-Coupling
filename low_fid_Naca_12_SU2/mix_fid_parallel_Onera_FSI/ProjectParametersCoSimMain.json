@@ -1,0 +1,131 @@
+{
+    "problem_data": {
+        "start_time": 0.0,
+        "end_time": 1.0,
+        "echo_level": 0,
+        "print_colors": true,
+        "parallel_type": "OpenMP"
+    },
+    "solver_settings": {
+        "type": "coupled_solvers.gauss_seidel_strong",
+        "num_coupling_iterations": 20,
+        "echo_level": 3,
+        "data_transfer_operators": {
+            "direct_transfer": {
+                "type": "kratos_mapping",
+                "mapper_settings": {
+                    "mapper_type": "nearest_neighbor"
+                }
+            }
+        },
+        "predictors": [],
+        "convergence_accelerators": [
+            {
+                "type": "aitken",
+                "solver": "FSI",
+                "data_name": "alpha"
+            }
+        ],
+        "convergence_criteria": [
+            {
+                "type": "relative_norm_previous_residual",
+                "solver": "FSI",
+                "data_name": "alpha",
+                "abs_tolerance": 1e-7,
+                "rel_tolerance": 1e-5
+            }
+        ],
+        "coupling_sequence": [
+            {
+                "name": "FSI",
+                "output_data_list": [],
+                "input_data_list": []
+            },
+            {
+                "name": "spring",
+                "input_data_list": [
+                    {
+                        "data": "single_force",
+                        "from_solver": "FSI",
+                        "from_solver_data": "single_force",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ],
+                "output_data_list": [
+                    {
+                        "data": "alpha",
+                        "to_solver": "FSI",
+                        "to_solver_data": "alpha",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ]
+            }
+        ],
+        "solvers": {
+            "FSI": {
+                "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
+                "solver_wrapper_settings": {
+                    "export_data": [
+                        "alpha"
+                    ],
+                    "import_data": [
+                        "single_force"
+                    ],
+                    "import_meshes": [
+                        "S_Node"
+                    ]
+                },
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "connect_to": "External_FSI",
+                    "communication_format": "file"
+                },
+                "data": {
+                    "alpha": {
+                        "model_part_name": "S_Node",
+                        "variable_name": "SCALAR_DISPLACEMENT",
+                        "location": "node_historical"
+                    },
+                    "single_force": {
+                        "model_part_name": "S_Node",
+                        "variable_name": "SCALAR_FORCE",
+                        "location": "node_historical"
+                    }
+                }
+            },
+            "spring": {
+                "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
+                "solver_wrapper_settings": {
+                    "export_data": [
+                        "single_force"
+                    ],
+                    "import_data": [
+                        "alpha"
+                    ],
+                    "import_meshes": [
+                        "S_Node_2"
+                    ]
+                },
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "connect_to": "run_structure",
+                    "communication_format": "file"
+                },
+                "data": {
+                    "alpha": {
+                        "model_part_name": "S_Node_2",
+                        "variable_name": "SCALAR_DISPLACEMENT",
+                        "location": "node_historical"
+                    },
+                    "single_force": {
+                        "model_part_name": "S_Node_2",
+                        "variable_name": "SCALAR_FORCE",
+                        "location": "node_historical"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,263 @@
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 9.3."1"-cosim/default_wrapper-66a1858fa7-Release-x86_64
+           Compiled for GNU/Linux and Python3.10 with GCC-11.4
+Compiled with threading and MPI support.
+Maximum number of threads: 30.
+MPI world size:         18.
+Importing    KratosCoSimulationApplication 
+    KRATOS  / ___|___/ ___|(_)_ __ ___  _   _| | __ _| |_(_) ___  _ __
+           | |   / _ \___ \| | '_ ` _ \| | | | |/ _` | __| |/ _ \| '_ \
+           | |__| (_) |__) | | | | | | | |_| | | (_| | |_| | (_) | | | |
+            \____\___/____/|_|_| |_| |_|\__,_|_|\__,_|\__|_|\___/|_| |_|
+Initializing KratosCoSimulationApplication...
+Importing    KratosOptimizationApplication 
+_______        ____________             
+__  __ \_________  /___    |_______________             
+_  / / /__  __ \  __/_  /| |__  __ \__  __ \            
+/ /_/ /__  /_/ / /_ _  ___ |_  /_/ /_  /_/ /            
+\____/ _  .___/\__/ /_/  |_|  .___/_  .___/             
+       /_/                 /_/     /_/                  
+Initializing KratosOptimizationApplication... 
+
+Parsing config file for zone 0
+
+----------------- Physical Case Definition ( Zone 0 ) -------------------
+Compressible Euler equations.
+Mach number: 0.8395.
+Angle of attack (AoA): 2.87 deg, and angle of sideslip (AoS): 0 deg.
+No restart solution, use the values at infinity (freestream).
+Non-Dimensional simulation (V=1.0, Rho=1.0, T=1.0 at the farfield).
+The reference area will be computed using y(2D) or z(3D) projection.
+The semi-span will be computed using the max y(3D) value.
+The reference length is 1 m.
+Reference origin for moment evaluation is (0.25, 0, 0).
+Surface(s) where the force coefficients are evaluated: WING.
+
+Surface(s) plotted in the output file: WING.
+Input mesh file name: mesh_ONERAM6_inv_ffd.su2
+
+--------------- Space Numerical Integration ( Zone 0 ) ------------------
+Jameson-Schmidt-Turkel scheme (2nd order in space) for the flow inviscid terms.
+JST viscous coefficients (2nd & 4th): 0.5, 0.02.
+The method includes a grid stretching correction (p = 0.3).
+Gradient for upwind reconstruction: inverse-distance weighted Least-Squares.
+Gradient for viscous and source terms: inverse-distance weighted Least-Squares.
+
+--------------- Time Numerical Integration  ( Zone 0 ) ------------------
+Local time stepping (steady state simulation).
+Euler implicit method for the flow equations.
+FGMRES is used for solving the linear system.
+Using a ILU(0) preconditioning.
+Convergence criteria of the linear solver: 1e-06.
+Max number of linear iterations: 10.
+W Multigrid Cycle, with 3 multigrid levels.
+Damping factor for the residual restriction: 0.9.
+Damping factor for the correction prolongation: 0.9.
+CFL adaptation. Factor down: 0.1, factor up: 2,
+                lower limit: 25, upper limit: 1e+10,
+                acceptable linear residual: 0.001.
++-------------------------------------------+
+|  MG Level| Presmooth|PostSmooth|CorrectSmo|
++-------------------------------------------+
+|         0|         1|         0|         0|
+|         1|         2|         0|         0|
+|         2|         3|         0|         0|
+|         3|         3|         0|         0|
++-------------------------------------------+
+Courant-Friedrichs-Lewy number:       25
+
+------------------ Convergence Criteria  ( Zone 0 ) ---------------------
+Maximum number of solver subiterations: 9999.
+Begin convergence monitoring at iteration 25.
+Residual minimum value: 1e-12.
+Cauchy series min. value: 1e-10.
+Number of Cauchy elements: 100.
+Begin windowed time average at iteration 0.
+
+-------------------- Output Information ( Zone 0 ) ----------------------
+File writing frequency: 
++------------------------------------+
+|                     File| Frequency|
++------------------------------------+
+|                  RESTART|       250|
+|                 PARAVIEW|       250|
+|         SURFACE_PARAVIEW|       250|
+|                STL_ASCII|       250|
++------------------------------------+
+Writing the convergence history file every 1 inner iterations.
+Writing the screen convergence history every 1 inner iterations.
+The tabular file format is CSV (.csv).
+Convergence history file name: history.
+Forces breakdown file name: forces_breakdown.dat.
+Surface file name: surface_flow.
+Volume file name: flow.
+Restart file name: restart_flow.dat.
+
+------------- Config File Boundary Information ( Zone 0 ) ---------------
++-----------------------------------------------------------------------+
+|                        Marker Type|                        Marker Name|
++-----------------------------------------------------------------------+
+|                         Euler wall|                               WING|
++-----------------------------------------------------------------------+
+|                          Far-field|                           FARFIELD|
++-----------------------------------------------------------------------+
+|                     Symmetry plane|                           SYMMETRY|
++-----------------------------------------------------------------------+
+|           Deformable mesh boundary|                               WING|
++-----------------------------------------------------------------------+
+|               Fluid loads boundary|                               WING|
++-----------------------------------------------------------------------+
+
+-------------------- Output Preprocessing ( Zone 0 ) --------------------
+
+WARNING: SURFACE_PRESSURE_DROP can only be computed for at least 2 surfaces (outlet, inlet, ...)
+
+Screen output fields: INNER_ITER, WALL_TIME, RMS_DENSITY, RMS_ENERGY, LIFT, DRAG
+History output group(s): ITER, RMS_RES
+Convergence field(s): RMS_DENSITY
+Warning: No (valid) fields chosen for time convergence monitoring. Time convergence monitoring inactive.
+Volume output fields: COORDINATES, SOLUTION, PRIMITIVE
+
+------------------- Geometry Preprocessing ( Zone 0 ) -------------------
+Three dimensional problem.
+108396 grid points before partitioning.
+582752 volume elements before partitioning.
+3 surface markers.
+468 boundary elements in index 0 (Marker = FARFIELD).
+1834 boundary elements in index 1 (Marker = SYMMETRY).
+36454 boundary elements in index 2 (Marker = WING).
+Executing the partitioning functions.
+Building the graph adjacency structure.
+Calling ParMETIS... graph partitioning complete (27168 edge cuts).
+Distributing ParMETIS coloring.
+Rebalancing vertices.
+Rebalancing volume element connectivity.
+Rebalancing markers and surface elements.
+124792 vertices including ghost points. 
+624531 interior elements including halo cells. 
+624531 tetrahedra.
+Establishing MPI communication patterns.
+Setting point connectivity.
+Renumbering points (Reverse Cuthill McKee Ordering).
+Recomputing point connectivity.
+Setting element connectivity.
+Checking the numerical grid orientation.
+All volume elements are correctly orientend.
+All surface elements are correctly orientend.
+Identifying edges and vertices.
+Setting the control volume structure.
+Volume of the computational grid: 4444.16.
+Searching for the closest normal neighbors to the surfaces.
+Storing a mapping from global to local point index.
+Compute the surface curvature.
+Max K: 21581.2. Mean K: 295.387. Standard deviation K: 889.192.
+Checking for periodicity.
+Computing mesh quality statistics for the dual control volumes.
++--------------------------------------------------------------+
+|           Mesh Quality Metric|        Minimum|        Maximum|
++--------------------------------------------------------------+
+|    Orthogonality Angle (deg.)|        55.1944|             90|
+|     CV Face Area Aspect Ratio|        1.32017|        51.3665|
+|           CV Sub-Volume Ratio|              1|        53.1822|
++--------------------------------------------------------------+
+Setting the multigrid structure.
++-------------------------------------------+
+|  MG Level|       CVs|Aggl. Rate|       CFL|
++-------------------------------------------+
+|         0|    124792|    1/1.00|        25|
+|         1|     26048|    1/4.79|   22.2447|
+|         2|      9220|    1/2.83|   23.6032|
+Finding max control volume width.
+Communicating number of neighbors.
+Reference area = 0.757532 m^2.
+Semi-span length = 1.21792 m.
+Wetted area = 1.55123 m^2.
+Area projection in the x-plane = 0.0736762 m^2, y-plane = 0.0179701 m^2, z-plane = 0.757532 m^2.
+Max. coordinate in the x-direction = 1.14193 m, y-direction = 1.21792 m, z-direction = 0.0392061 m.
+Min. coordinate in the x-direction = 0 m, y-direction = 0 m, z-direction = -0.0392073 m.
+Checking if Euler & Symmetry markers are straight/plane:
+Boundary marker WING is NOT a single plane.
+Boundary marker SYMMETRY is a single plane.
+Boundary marker WING is NOT a single plane.
+Computing wall distances.
+
+-------------------- Solver Preprocessing ( Zone 0 ) --------------------
+Inviscid flow: Computing density based on free-stream
+temperature and pressure using the ideal gas law.
+Force coefficients computed using free-stream values.
+
+-- Models:
++------------------------------------------------------------------------------+
+|          Viscosity Model|        Conductivity Model|              Fluid Model|
++------------------------------------------------------------------------------+
+|                        -|                         -|             STANDARD_AIR|
++------------------------------------------------------------------------------+
+-- Fluid properties:
++------------------------------------------------------------------------------+
+|                  Name|    Dim. value|    Ref. value|      Unit|Non-dim. value|
++------------------------------------------------------------------------------+
+|          Gas Constant|       287.058|        283.23|  N.m/kg.K|       1.01352|
+|      Spec. Heat Ratio|             -|             -|         -|           1.4|
++------------------------------------------------------------------------------+
+-- Initial and free-stream conditions:
++------------------------------------------------------------------------------+
+|                  Name|    Dim. value|    Ref. value|      Unit|Non-dim. value|
++------------------------------------------------------------------------------+
+|       Static Pressure|        101325|       99973.8|        Pa|       1.01352|
+|               Density|       1.22498|       1.22498|    kg/m^3|             1|
+|           Temperature|        288.15|        288.15|         K|             1|
+|          Total Energy|        247596|       81612.7|   m^2/s^2|       3.03379|
+|            Velocity-X|       285.321|       285.679|       m/s|      0.998746|
+|            Velocity-Y|             0|       285.679|       m/s|             0|
+|            Velocity-Z|        14.304|       285.679|       m/s|       0.05007|
+|    Velocity Magnitude|       285.679|       285.679|       m/s|             1|
++------------------------------------------------------------------------------+
+|           Mach Number|             -|             -|         -|        0.8395|
++------------------------------------------------------------------------------+
+Initialize Jacobian structure (Euler). MG level: 0.
+Initialize Jacobian structure (Mesh Deformation).
+Initialize Jacobian structure (Euler). MG level: 1.
+Initialize Jacobian structure (Euler). MG level: 2.
+
+------------------- Numerics Preprocessing ( Zone 0 ) -------------------
+
+----------------- Integration Preprocessing ( Zone 0 ) ------------------
+
+------------------- Iteration Preprocessing ( Zone 0 ) ------------------
+Euler/Navier-Stokes/RANS fluid iteration.
+Start set_up_variables ...
+myid = 1, self.nLocalFluidInterfaceNodes = 1399, self.haveFluidInterface = True
+myid = 2, self.nLocalFluidInterfaceNodes = 1289, self.haveFluidInterface = True
+myid = 3, self.nLocalFluidInterfaceNodes = 512, self.haveFluidInterface = True
+myid = 4, self.nLocalFluidInterfaceNodes = 1276, self.haveFluidInterface = True
+myid = 5, self.nLocalFluidInterfaceNodes = 726, self.haveFluidInterface = True
+myid = 6, self.nLocalFluidInterfaceNodes = 723, self.haveFluidInterface = True
+myid = 7, self.nLocalFluidInterfaceNodes = 1298, self.haveFluidInterface = True
+myid = 8, self.nLocalFluidInterfaceNodes = 1297, self.haveFluidInterface = True
+myid = 9, self.nLocalFluidInterfaceNodes = 1317, self.haveFluidInterface = True
+myid = 10, self.nLocalFluidInterfaceNodes = 1010, self.haveFluidInterface = True
+myid = 11, self.nLocalFluidInterfaceNodes = 1070, self.haveFluidInterface = True
+myid = 12, self.nLocalFluidInterfaceNodes = 1277, self.haveFluidInterface = True
+myid = 13, self.nLocalFluidInterfaceNodes = 874, self.haveFluidInterface = True
+myid = 14, self.nLocalFluidInterfaceNodes = 1034, self.haveFluidInterface = True
+myid = 15, self.nLocalFluidInterfaceNodes = 1289, self.haveFluidInterface = True
+myid = 16, self.nLocalFluidInterfaceNodes = 1068, self.haveFluidInterface = True
+myid = 17, self.nLocalFluidInterfaceNodes = 1309, self.haveFluidInterface = True
+myid = 0, self.nLocalFluidInterfaceNodes = 1132, self.haveFluidInterface = True
+Total number of fluid interface nodes (halo nodes included) : 19900
+Total number of fluid interface nodes : 18285
+CoSimIO: CoSimIO from "run_SU2" to "fluid" uses communication format: file
+CoSimIO: Establishing connection for "fluid_run_SU2"
+    from: "run_SU2"
+    to:   "fluid"
+    as SECONDARY connection; working directory: "." ...
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun noticed that process rank 2 with PID 0 on node desktop52 exited on signal 15 (Terminated).
+--------------------------------------------------------------------------
