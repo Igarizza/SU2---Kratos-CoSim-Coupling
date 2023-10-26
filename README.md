@@ -1,2 +1,2 @@
-# SU2---Kratos-CoSim-Coupling
-Different adapters to SU2 solver to use it with KratosMultiphysics. 
+# SU2-CoSim Interface
+The repository presents several examples to demonstrate the possebilities of coupling external solvers with KratosMultiphysics by using CoSimApplication.
