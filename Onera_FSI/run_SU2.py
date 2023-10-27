@@ -102,7 +102,6 @@ def ImportData(info):
         sorted_displcement[old_index * 3 + 1] = imported_data_numpy[node_index * 3 + 1]
         sorted_displcement[old_index * 3 + 2] = imported_data_numpy[node_index * 3 + 2]
 
-
     send_msg = {'method_name': "setFluidDisplacements"}
     for i in range(1, comm.size):
         comm.send(send_msg, dest=i, tag=12)
