@@ -1,0 +1,168 @@
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 9.3."1"-cosim/default_wrapper-66a1858fa7-Release-x86_64
+           Compiled for GNU/Linux and Python3.10 with GCC-11.4
+Compiled with threading and MPI support.
+Maximum number of threads: 30.
+Running without MPI.
+Importing    KratosCoSimulationApplication 
+    KRATOS  / ___|___/ ___|(_)_ __ ___  _   _| | __ _| |_(_) ___  _ __
+           | |   / _ \___ \| | '_ ` _ \| | | | |/ _` | __| |/ _ \| '_ \
+           | |__| (_) |__) | | | | | | | |_| | | (_| | |_| | (_) | | | |
+            \____\___/____/|_|_| |_| |_|\__,_|_|\__,_|\__|_|\___/|_| |_|
+Initializing KratosCoSimulationApplication...
+Importing    KratosOptimizationApplication 
+_______        ____________             
+__  __ \_________  /___    |_______________             
+_  / / /__  __ \  __/_  /| |__  __ \__  __ \            
+/ /_/ /__  /_/ / /_ _  ___ |_  /_/ /_  /_/ /            
+\____/ _  .___/\__/ /_/  |_|  .___/_  .___/             
+       /_/                 /_/     /_/                  
+Initializing KratosOptimizationApplication... 
+CoSimIO: CoSimIO from "External_FSI" to "FSI" uses communication format: file
+CoSimIO: Establishing connection for "External_FSI_FSI"
+    from: "External_FSI"
+    to:   "FSI"
+    as PRIMARY connection; working directory: "." ...
+CoSimIO: Waiting for: "./.CoSimIOComm_External_FSI_FSI/CoSimIO_External_FSI_FSI_compatibility_check_secondary_to_primary.dat"
+CoSimIO: Found: "./.CoSimIOComm_External_FSI_FSI/CoSimIO_External_FSI_FSI_compatibility_check_secondary_to_primary.dat"
+CoSimIO: Connection established
+CoSimIO: Registering function for: AdvanceInTime
+CoSimIO: Registering function for: InitializeSolutionStep
+CoSimIO: Registering function for: Predict
+CoSimIO: Registering function for: SolveSolutionStep
+CoSimIO: Registering function for: FinalizeSolutionStep
+CoSimIO: Registering function for: OutputSolutionStep
+CoSimIO: Registering function for: ImportData
+CoSimIO: Registering function for: ExportData
+CoSimIO: Registering function for: ImportMesh
+CoSimIO: Registering function for: ExportMesh
+ExportMesh::ExportMesh: Finished - [ Elapsed time: 0:00:00] 
+ 
+AdvanceInTime::AdvanceInTime: Finished - [ Elapsed time: 0:00:00] 
+ 
+InitializeSolutionStep::InitializeSolutionStep: Finished - [ Elapsed time: 0:00:00] 
+ 
+Predict::Predict: Finished - [ Elapsed time: 0:00:00] 
+ 
+ImportData::ImportData: Finished - [ Elapsed time: 0:00:00] 
+ 
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+[1;1mCoSimTools[0m: Created ModelPart "S_Node" for solver "fluid" 
+[1;1mCoSimTools[0m: Created ModelPart "WING" for solver "fluid" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_DISPLACEMENT" in ModelPart "S_Node" for solver "fluid" 
+[1;1mCoSimTools[0m: Allocating historical variable "MESH_DISPLACEMENT" in ModelPart "WING" for solver "fluid" 
+[1;1mCoSimTools[0m: Allocating historical variable "REACTION" in ModelPart "WING" for solver "fluid" 
+[1;1mCoSimTools[0m: Allocating historical variable "SCALAR_FORCE" in ModelPart "S_Node" for solver "fluid" 
+[WARNING] DEPRECATION-Warning; MechanicalSolver: Using "line_search", please move it to "solving_strategy_settings" as "type" 
+::[MechanicalSolver]:: : Construction finished 
+::[StaticMechanicalSolver]:: : Construction finished 
+::[MechanicalSolver]:: : Variables ADDED 
+CoSimIO: CoSimIO from "fluid" to "run_SU2" uses communication format: file
+[WARNING] [1;1mCouplingInterfaceData[0m: No "DOMAIN_SIZE" was specified for ModelPart "WING" 
+[WARNING] [1;1mCouplingInterfaceData[0m: No "DOMAIN_SIZE" was specified for ModelPart "WING" 
+::[PythonSolver]::: Reading model part. 
+SingleImportModelPart: Reading model part from file: "/localdata/CoSim/low_fid_Naca_12_SU2/mix_fid_parallel_Onera_FSI/OneraM6_3D_Solid_static".mdpa
+ModelPartIO:   [Reading Nodes    : 30569 nodes read]
+ModelPartIO:   [Reading Elements : 123245 elements read] [Type: SmallDisplacementElement3D4N]
+ModelPartIO:   [Reading Conditions : 18285 conditions read] [Type: PointLoadCondition3D1N]
+ModelPartIO:   [Total Lines Read : 344556]
+SingleImportModelPart: Finished reading model part from mdpa file.
+ModelPart: -Structure- model part
+    Buffer Size : 1
+    Number of tables : 0
+    Number of sub model parts : 3
+    Current solution step index : 0
+    DOMAIN_SIZE : 3
+    IS_RESTARTED : 0
+
+    Number of Geometries  : 0
+    Mesh 0 :
+        Number of Nodes       : 30569
+        Number of Properties  : 2
+        Number of Elements    : 123245
+        Number of Conditions  : 18285
+        Number of Constraints : 0
+
+    -interface- model part
+        Number of tables : 0
+        Number of sub model parts : 0
+
+        Number of Geometries  : 0
+        Mesh 0 :
+            Number of Nodes       : 18285
+            Number of Properties  : 0
+            Number of Elements    : 0
+            Number of Conditions  : 0
+            Number of Constraints : 0
+    -support- model part
+        Number of tables : 0
+        Number of sub model parts : 0
+
+        Number of Geometries  : 0
+        Mesh 0 :
+            Number of Nodes       : 310
+            Number of Properties  : 0
+            Number of Elements    : 0
+            Number of Conditions  : 0
+            Number of Constraints : 0
+    -wing- model part
+        Number of tables : 0
+        Number of sub model parts : 0
+
+        Number of Geometries  : 0
+        Mesh 0 :
+            Number of Nodes       : 30569
+            Number of Properties  : 0
+            Number of Elements    : 123245
+            Number of Conditions  : 0
+            Number of Constraints : 0
+ 
+::[PythonSolver]:: : Finished reading model part. 
+Read materials: Started
+[WARNING] ReadMaterialsUtility: WARNING:: The properties ID: 0 is already defined in model part Structure.wing. This will overwrite the existing values
+Read materials: Finished
+::[MechanicalSolver]:: : Constitutive law was successfully imported. 
+::[MechanicalSolver]::: ModelPart prepared for Solver. 
+::[MechanicalSolver]:: : DOF's ADDED 
+[WARNING] VtkOutputProcess: 
+[1;31m[DEPRECATED INPUT PARAMETERS] [0m'folder_name' is deprecated; use 'output_path' instead. 
+[WARNING] VtkOutput: Modelpart "Structure" has both elements and conditions.
+Giving precedence to elements and writing only elements!
+::[MechanicalSolver]:: : Initializing ... 
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Linear-Solver-Factory: Constructing a regular (non-complex) linear-solver 
+::[MechanicalSolver]:: : Finished initialization. 
+::[KSM Simulation]:: : Analysis -START-  
+Importing    KratosMappingApplication 
+    KRATOS ______  ___                      _____
+           ___   |/  /_____ ___________________(_)_____________ _
+           __  /|_/ /_  __ `/__  __ \__  __ \_  /__  __ \_  __ `/
+           _  /  / / / /_/ /__  /_/ /_  /_/ /  / _  / / /  /_/ /
+           /_/  /_/  \__,_/ _  .___/_  .___//_/  /_/ /_/_\__, /
+                            /_/     /_/                 /____/
+Initializing KratosMappingApplication...
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solver does not implement Check!!! 
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solvimport single_force [0] 1
+imported phi_in_rad = 0.0
+None
+er does not implement Check!!! 
+[WARNING] [1;1mCoSimulationSolverWrapper[0m: your solver does not implement Check!!! 
+[WARNING] [1;1mConvergence Accelerator[0m: The convergence accelerators do not yet implement Check! 
+[1;1mCoSimulationSolverWrapper[0m: GaussSeidelStrongCoupledSolver default_co_simulation Using 1 mpi-processes 
+[1;1mGaussSeidelStrongCoupledSolver[0m: Has the following components: 
+[1;1mKratosSolver[0m: StructuralMechanicsWrapper 
+[1;1mKratosSolver[0m: Using AnalysisStage "StructuralMechanicsAnalysis", defined in module "KratosMultiphysics.StructuralMechanicsApplication.structural_mechanics_analysis 
