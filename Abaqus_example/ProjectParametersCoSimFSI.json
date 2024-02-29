@@ -1,0 +1,265 @@
+{
+    "problem_data": {
+        "start_time": 0.0,
+        "end_time": 1.0,
+        "echo_level": 0,
+        "print_colors": true,
+        "parallel_type": "OpenMP"
+    },
+    "solver_settings": {
+        "type": "coupled_solvers.gauss_seidel_strong",
+        "num_coupling_iterations": 20,
+        "echo_level": 3,
+        "data_transfer_operators": {
+            "direct_transfer": {
+                "type": "kratos_mapping",
+                "mapper_settings": {
+                    "mapper_type": "nearest_neighbor",
+                    "use_initial_configuration": true
+                }
+            }
+        },
+        "predictors": [],
+        "convergence_accelerators": [],
+        "convergence_criteria": [
+            {
+                "type": "relative_norm_previous_residual",
+                "solver": "dummy",
+                "data_name": "temperature_External",
+                "abs_tolerance": 1e-7,
+                "rel_tolerance": 1e-5
+            }
+        ],
+        "coupling_sequence": [
+            {
+                "name": "dummy",
+                "output_data_list": [
+                    {
+                        "data": "heatflow_External",
+                        "to_solver": "structure",
+                        "to_solver_data": "heatflow_External",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel0",
+                        "to_solver": "structure",
+                        "to_solver_data": "heatflow_Channel0",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel1",
+                        "to_solver": "structure",
+                        "to_solver_data": "heatflow_Channel1",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel2",
+                        "to_solver": "structure",
+                        "to_solver_data": "heatflow_Channel2",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ],
+                "input_data_list": []
+            },
+            {
+                "name": "structure",
+                "input_data_list": [
+                    {
+                        "data": "heatflow_External",
+                        "from_solver": "dummy",
+                        "from_solver_data": "heatflow_External",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel0",
+                        "from_solver": "dummy",
+                        "from_solver_data": "heatflow_Channel0",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel1",
+                        "from_solver": "dummy",
+                        "from_solver_data": "heatflow_Channel1",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "heatflow_Channel2",
+                        "from_solver": "dummy",
+                        "from_solver_data": "heatflow_Channel2",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ],
+                "output_data_list": [
+                    {
+                        "data": "temperature_External",
+                        "to_solver": "dummy",
+                        "to_solver_data": "temperature_External",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "temperature_Channel0",
+                        "to_solver": "dummy",
+                        "to_solver_data": "temperature_Channel0",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "temperature_Channel1",
+                        "to_solver": "dummy",
+                        "to_solver_data": "temperature_Channel1",
+                        "data_transfer_operator": "direct_transfer"
+                    },
+                    {
+                        "data": "temperature_Channel2",
+                        "to_solver": "dummy",
+                        "to_solver_data": "temperature_Channel2",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ]
+            }
+        ],
+        "solvers": {
+            "dummy": {
+                "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
+                "solver_wrapper_settings": {
+                    "export_data": [
+                        "temperature_External",
+                        "temperature_Channel0",
+                        "temperature_Channel1",
+                        "temperature_Channel2"
+                    ],
+                    "import_data": [
+                        "heatflow_External",
+                        "heatflow_Channel0",
+                        "heatflow_Channel1",
+                        "heatflow_Channel2"
+                    ],
+                    "import_meshes": [
+                        "External",
+                        "Channel0",
+                        "Channel1",
+                        "Channel2"
+                    ]
+                },
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "connect_to": "run_dummy",
+                    "communication_format": "file"
+                },
+                "data": {
+                    "temperature_External": {
+                        "model_part_name": "External",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel0": {
+                        "model_part_name": "Channel0",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel1": {
+                        "model_part_name": "Channel1",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel2": {
+                        "model_part_name": "Channel2",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "heatflow_External": {
+                        "model_part_name": "External",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel0": {
+                        "model_part_name": "Channel0",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel1": {
+                        "model_part_name": "Channel1",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel2": {
+                        "model_part_name": "Channel2",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    }
+                }
+            },
+            "structure": {
+                "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
+                "solver_wrapper_settings": {
+                    "export_data": [
+                        "heatflow_External",
+                        "heatflow_Channel0",
+                        "heatflow_Channel1",
+                        "heatflow_Channel2"
+                    ],
+                    "import_data": [
+                        "temperature_External",
+                        "temperature_Channel0",
+                        "temperature_Channel1",
+                        "temperature_Channel2"
+                    ],
+                    "import_meshes": [
+                        "External",
+                        "Channel0",
+                        "Channel1",
+                        "Channel2"
+                    ]
+                },
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "connect_to": "run_structure",
+                    "communication_format": "file"
+                },
+                "data": {
+                    "temperature_External": {
+                        "model_part_name": "External",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel0": {
+                        "model_part_name": "Channel0",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel1": {
+                        "model_part_name": "Channel1",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "temperature_Channel2": {
+                        "model_part_name": "Channel2",
+                        "variable_name": "TEMPERATURE",
+                        "location": "node_historical"
+                    },
+                    "heatflow_External": {
+                        "model_part_name": "External",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel0": {
+                        "model_part_name": "Channel0",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel1": {
+                        "model_part_name": "Channel1",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    },
+                    "heatflow_Channel2": {
+                        "model_part_name": "Channel2",
+                        "variable_name": "HEAT_FLUX",
+                        "location": "node_historical"
+                    }
+                }
+            }
+        }
+    }
+}

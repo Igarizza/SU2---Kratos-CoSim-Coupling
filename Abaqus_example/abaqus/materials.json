@@ -1,0 +1,105 @@
+
+{
+    "Aluminum":
+    {
+        "MOL_WEIGHT": 26.98,
+        "DENSITY": 2700.0,
+        "YOUNG_MODULUS": 7.0e+10,
+        "POISSON_RATIO": 0.33,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [236.0],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [837.0],
+            "TEMPERATURES": [273.15]
+        }
+    }, 
+    "Steel":
+    {
+        "MOL_WEIGHT": 55.85,
+        "DENSITY": 7850.0,
+        "YOUNG_MODULUS": 21.0e+10,
+        "POISSON_RATIO": 0.3,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [57.0],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [430.0],
+            "TEMPERATURES": [273.15]
+        }
+    }, 
+    "Copper":
+    {
+        "MOL_WEIGHT": 63.55,
+        "DENSITY": 8960.0,
+        "YOUNG_MODULUS": 12e+10,
+        "POISSON_RATIO": 0.35,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [401.0],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [381.0],
+            "TEMPERATURES": [273.15]
+        }
+    }, 
+    "Titanium":
+    {
+        "MOL_WEIGHT": 47.87,
+        "DENSITY": 4510.0,
+        "YOUNG_MODULUS": 10.5e+10,
+        "POISSON_RATIO": 0.33,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [22.5],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [513.0],
+            "TEMPERATURES": [273.15]
+        }
+    }, 
+    "Gold":
+    {
+        "MOL_WEIGHT": 196.97,
+        "DENSITY": 19300.0,
+        "YOUNG_MODULUS": 7.8e+10,
+        "POISSON_RATIO": 0.42,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [318.0],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [128.0],
+            "TEMPERATURES": [273.15]
+        }
+    }, 
+    "Silver":
+    {
+        "MOL_WEIGHT": 107.87,
+        "DENSITY": 10500.0,
+        "YOUNG_MODULUS": 12.1e+10,
+        "POISSON_RATIO": 0.37,
+        "HEAT_CONDUCTIVITY":
+        {
+            "VALUES": [428.0],
+            "TEMPERATURES": [273.15]
+        },
+        "SPECIFIC_HEAT_CAPACITY":
+        {
+            "VALUES": [236.0],
+            "TEMPERATURES": [273.15]
+        }
+    }
+}

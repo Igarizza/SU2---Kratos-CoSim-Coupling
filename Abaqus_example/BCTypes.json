@@ -1,0 +1,19 @@
+{
+    "Abaqus":
+    {
+        "External": "Neumann",
+        "Channel0": "Neumann",
+        "Channel1": "Neumann",
+        "Channel2": "Neumann"
+    },
+    "TAU":
+    {
+        "External": "Dirichlet"
+    },
+    "SU2":
+    {
+        "Channel0": "Dirichlet",
+        "Channel1": "Dirichlet",
+        "Channel2": "Dirichlet"
+    }
+}
