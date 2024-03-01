@@ -1,1 +1,3 @@
-# Abaqud-CoSim Interface
+# Abaqus-CoSim Interface
+
+Does not work yet!
