@@ -1,3 +1,4 @@
 # Abaqus-CoSim Interface
 
-Does not work yet!
+Does not fully work yet!
+SolveSolutionStep, AdvanceInTime and 
