@@ -2,8 +2,6 @@ from __future__ import print_function, absolute_import, division #makes KratosMu
 
 import KratosMultiphysics
 from KratosMultiphysics.CoSimulationApplication.co_simulation_analysis import CoSimulationAnalysis
-import KratosMultiphysics.StatisticsApplication
-
 import sys
 import time
 import os

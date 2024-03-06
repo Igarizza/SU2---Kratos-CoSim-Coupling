@@ -7,6 +7,7 @@ class EX_SU2_IO():
     def __init__(self, config_file: str, flow_marker_name: str, mesh_file: str, comm: MPI.COMM_WORLD) -> None:
         self.config_file = config_file
         self.flow_driver = pysu2.CSinglezoneDriver(config_file, 1, comm)
+        self.adjoint_flow_driver = pysu2.CSinglezoneDriver("adjoint_" + config_file, 1, comm)
         self.flow_marker_name = flow_marker_name
         self.mesh_file = mesh_file
         self.comm = comm
@@ -315,6 +316,30 @@ class EX_SU2_IO():
         del LocalForce
         return self.FluidForceList
 
+    def get_gradients(self):
+        LocalForce = []
+        self.Force = []
+        self.FluidForceLocal = {}
+        # --- Get the fluid interface loads from the fluid solver and directly fill the corresponding PETSc vector ---
+        for iVertex in range(self.nLocalFluidInterfaceNodes):
+            if not self.adjoint_flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex):
+                nodeId = self.adjoint_flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
+                newF = self.adjoint_flow_driver.GetFlowLoad_Sensitivity(self.FlowMarkerID, iVertex)
+                self.FluidForceLocal[nodeId] = newF
+                LocalForce.append(newF[0])
+                LocalForce.append(newF[1])
+                LocalForce.append(newF[2])
+
+        self.FluidForceListGradient = self.comm.allgather(self.FluidForceLocal)
+        ForceList=self.comm.allgather(LocalForce)
+        self.MPIBarrier()
+        for i in ForceList:
+            for j in i:
+                self.Force.append(j)
+        self.Force = np.array(self.Force)
+        del LocalForce
+        return self.FluidForceListGradient
+
 
     def setFluidDisplacements (self,newDisplacements):
         # --- Send the new fluid interface position to the fluid solver (on each partition, halo nodes included) ---
@@ -331,6 +356,7 @@ class EX_SU2_IO():
                     # print(GlobalIndex)
                     number +=1
                 self.flow_driver.SetMeshDisplacement(self.FlowMarkerID, iVertex, disp[0], disp[1], disp[2])
+                self.adjoint_flow_driver.SetMeshDisplacement(self.FlowMarkerID, iVertex, disp[0], disp[1], disp[2])
                 # print(f"GlobalIndex = {GlobalIndex}, coord_x = {init_coord[0] + disp[0]}")
         self.flow_driver.CommunicateMeshDisplacement()
 
@@ -365,6 +391,14 @@ class EX_SU2_IO():
                 myid +=1
                 if myid == self.comm.Get_size():
                     raise RuntimeError(f"Error code 877, GlobalIndex = {GlobalIndex}")
+        if flag == 4:
+            while True:
+                if GlobalIndex in self.FluidForceListGradient[myid]:
+                    disp = self.FluidForceListGradient[myid].get(GlobalIndex)
+                    break
+                myid +=1
+                if myid == self.comm.Get_size():
+                    raise RuntimeError(f"Error code 777, GlobalIndex = {GlobalIndex}")
         return disp
 
 
@@ -386,3 +420,6 @@ class EX_SU2_IO():
 
     def SolveCFD(self):
         self.flow_driver.StartSolver()
+
+    def AdjointSolveCFD(self):
+        self.adjoint_flow_driver.StartSolver()

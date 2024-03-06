@@ -25,33 +25,6 @@ EX_SU2_IO = EX_SU2_IO(ConfigFile, FlowMarkerName, mesh_file_name, comm)
 
 s_connection_name = ""
 
-def cosimio_check_equal(a, b):
-    assert a == b
-
-@time_decorator()
-def AdvanceInTime(info):
-    settings = CoSimIO.Info()
-    settings.SetString("identifier", "AdvanceInTime")
-    settings.SetString("connection_name", s_connection_name)
-    CoSimIO.ExportInfo(settings)
-    return CoSimIO.Info()
-
-@time_decorator()
-def InitializeSolutionStep(info):
-    settings = CoSimIO.Info()
-    settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "InitializeSolutionStep")
-    CoSimIO.ExportInfo(settings)
-    return CoSimIO.Info()
-
-@time_decorator()
-def Predict(info):
-    settings = CoSimIO.Info()
-    settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "Predict")
-    CoSimIO.ExportInfo(settings)
-    return CoSimIO.Info()
-
 @time_decorator()
 def SolveSolutionStep(info):
 
@@ -60,23 +33,43 @@ def SolveSolutionStep(info):
         comm.send(send_msg, dest=i, tag=12)
 
     EX_SU2_IO.SolveCFD()
+
+    eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
+    info_to_export = CoSimIO.Info()
+    info_to_export.SetString("connection_name", s_connection_name)
+    info_to_export.SetString("identifier", "info_exchange")
+    info_to_export.SetDouble("value", -eff_value)
+    return_info = CoSimIO.ExportInfo(info_to_export)
+
     return CoSimIO.Info()
 
-@time_decorator()
-def FinalizeSolutionStep(info):
-    settings = CoSimIO.Info()
-    settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "FinalizeSolutionStep")
-    CoSimIO.ExportInfo(settings)
+def SolveAdjointSolutionStep(info):
+    send_msg = {'method_name': "SolveAdjointSolutionStep"}
+    for i in range(1, comm.size):
+        comm.send(send_msg, dest=i, tag=12)
+
+    EX_SU2_IO.AdjointSolveCFD()
+
+    ExportData(info)
+
     return CoSimIO.Info()
+
 
 @time_decorator()
 def OutputSolutionStep(info):
-    settings = CoSimIO.Info()
-    settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "OutputSolutionStep")
-    CoSimIO.ExportInfo(settings)
-    return CoSimIO.Info()
+    type = info.GetString("type")
+    if type == "value":
+        eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
+        name = info.GetString("name")
+        print(f"{name}: {eff_value}")
+        info_to_export = CoSimIO.Info()
+        info_to_export.SetString("connection_name", s_connection_name)
+        info_to_export.SetString("identifier", "info_exchange")
+        info_to_export.SetDouble(name, eff_value)
+        return_info = CoSimIO.ExportInfo(info_to_export)
+    elif type == "gradient":
+        raise RuntimeError("TEst 283")
+    return return_info
 
 @time_decorator()
 def ImportData(info):
@@ -117,13 +110,13 @@ def ImportData(info):
 def ExportData(info):
     settings = CoSimIO.Info()
     settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", info.GetString("identifier"))
+    settings.SetString("identifier", "info_exchange")
 
     send_msg = {'method_name': "ExportData"}
     for i in range(1, comm.size):
         comm.send(send_msg, dest=i, tag=12)
 
-    EX_SU2_IO.get_force()
+    EX_SU2_IO.get_gradients()
     fluid_force = []
 
     node_ids_sort = np.copy(EX_SU2_IO.nodeIDs)
@@ -132,25 +125,17 @@ def ExportData(info):
 
     for node_index in range(EX_SU2_IO.nFluidInterfacePhysicalNodes):
         node_id = node_ids_sort[node_index]
-        node_force = EX_SU2_IO.searchDisplacement(node_id, 3)
+        node_force = EX_SU2_IO.searchDisplacement(node_id, 4)
         fluid_force.append(node_force[0])
         fluid_force.append(node_force[1])
         fluid_force.append(node_force[2])
 
     data_to_be_send = CoSimIO.DoubleVector(fluid_force)
+    for value in data_to_be_send:
+        if value:
+            print(value)
+    print(data_to_be_send)
     return_info = CoSimIO.ExportData(settings, data_to_be_send)
-    return CoSimIO.Info()
-
-@time_decorator()
-def ImportMesh(info):
-    raise RuntimeError("ImportMesh")
-    settings = CoSimIO.Info()
-    settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "info_for_test")
-    settings.SetString("name_for_check", "ImportMesh")
-    if (info.Has("identifier")):
-        settings.SetString("identifier_control", info.GetString("identifier"))
-    CoSimIO.ExportInfo(settings)
     return CoSimIO.Info()
 
 @time_decorator()
@@ -160,20 +145,11 @@ def ExportMesh(info):
     info.SetString("identifier", FlowMarkerName)
     info.SetString("connection_name", s_connection_name)
 
-    # model_part = CoSimIO.ModelPart(FlowMarkerName)
-    # model_part.CreateNewNodes(EX_SU2_IO.nodeIDs, EX_SU2_IO.FluidInterfaceNodeCoordX, EX_SU2_IO.FluidInterfaceNodeCoordY, EX_SU2_IO.FluidInterfaceNodeCoordZ)
-    # ids = [i+1 for i in range(EX_SU2_IO.nFluidInterfaceElements)]
-    # types = [CoSimIO.ElementType.Triangle3D3 for i in range(EX_SU2_IO.nFluidInterfaceElements)]
-    # model_part.CreateNewElements(ids, types, EX_SU2_IO.FluidInterfaceElementsNodes)
-
     node_ids_sort = np.copy(EX_SU2_IO.nodeIDs)
     node_ids_sort = np.sort(node_ids_sort)
 
     model = Kratos.Model()
     model_part = model.CreateModelPart(FlowMarkerName)
-
-    # for node_index in range(EX_SU2_IO.nFluidInterfacePhysicalNodes):
-    #     model_part.CreateNewNode(EX_SU2_IO.nodeIDs[node_index], EX_SU2_IO.FluidInterfaceNodeCoord[node_index*3], EX_SU2_IO.FluidInterfaceNodeCoord[node_index*3 + 1], EX_SU2_IO.FluidInterfaceNodeCoord[node_index*3 + 2])
 
     for node_index in range(EX_SU2_IO.nFluidInterfacePhysicalNodes):
         node_id = node_ids_sort[node_index]
@@ -191,34 +167,24 @@ if myid == 0:
     # Connection Settings
     settings = CoSimIO.Info()
     settings.SetString("my_name", "run_SU2")
-    settings.SetString("connect_to", "fluid")
+    settings.SetString("connect_to", "Kratos_opt")
     settings.SetInt("echo_level", 1)
     settings.SetString("version", "1.25")
     settings.SetString("communication_format", "file")
 
     # Connecting
     return_info = CoSimIO.Connect(settings)
-    cosimio_check_equal(return_info.GetInt("connection_status"), CoSimIO.ConnectionStatus.Connected)
     s_connection_name = return_info.GetString("connection_name")
 
     # registering the functions
     fct_info = CoSimIO.Info()
     fct_info.SetString("connection_name", s_connection_name)
 
-    fct_info.SetString("function_name", "AdvanceInTime")
-    CoSimIO.Register(fct_info,           AdvanceInTime)
-
-    fct_info.SetString("function_name", "InitializeSolutionStep")
-    CoSimIO.Register(fct_info,           InitializeSolutionStep)
-
-    fct_info.SetString("function_name", "Predict")
-    CoSimIO.Register(fct_info,           Predict)
-
     fct_info.SetString("function_name", "SolveSolutionStep")
     CoSimIO.Register(fct_info,           SolveSolutionStep)
 
-    fct_info.SetString("function_name", "FinalizeSolutionStep")
-    CoSimIO.Register(fct_info,           FinalizeSolutionStep)
+    fct_info.SetString("function_name", "SolveAdjointSolutionStep")
+    CoSimIO.Register(fct_info,           SolveAdjointSolutionStep)
 
     fct_info.SetString("function_name", "OutputSolutionStep")
     CoSimIO.Register(fct_info,           OutputSolutionStep)
@@ -228,9 +194,6 @@ if myid == 0:
 
     fct_info.SetString("function_name", "ExportData")
     CoSimIO.Register(fct_info,           ExportData)
-
-    fct_info.SetString("function_name", "ImportMesh")
-    CoSimIO.Register(fct_info,           ImportMesh)
 
     fct_info.SetString("function_name", "ExportMesh")
     CoSimIO.Register(fct_info,           ExportMesh)
@@ -245,7 +208,6 @@ if myid == 0:
     disconnect_settings = CoSimIO.Info()
     disconnect_settings.SetString("connection_name", s_connection_name)
     return_info = CoSimIO.Disconnect(disconnect_settings)
-    cosimio_check_equal(return_info.GetInt("connection_status"), CoSimIO.ConnectionStatus.Disconnected)
     for i in range(1, comm.size):
         send_msg = {'method_name': "Exit"}
         comm.send(send_msg, dest=i, tag=12)
@@ -258,6 +220,8 @@ else:
             imported_data = comm.recv(source=0, tag=151)
             EX_SU2_IO.setFluidDisplacements(imported_data)
         elif recv_msg["method_name"] == "ExportData":
-            EX_SU2_IO.get_force()
+            EX_SU2_IO.get_gradients()
         elif recv_msg["method_name"] == "Exit":
             break
+        elif recv_msg["method_name"] == "SolveAdjointSolutionStep":
+            EX_SU2_IO.AdjointSolveCFD()

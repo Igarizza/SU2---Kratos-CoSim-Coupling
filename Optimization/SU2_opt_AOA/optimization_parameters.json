@@ -1,0 +1,95 @@
+{
+    "problem_data": {
+        "parallel_type": "OpenMP",
+        "echo_level": 0
+    },
+    "analyses": [
+        {
+            "name": "SU2",
+            "type": "remote_analysis_execution_policy",
+            "settings":{
+                "model_part_names": [
+                    "WING"
+                ],
+                "io_settings" : {
+                    "type"       : "kratos_co_sim_io",
+                    "echo_level" : 4,
+                    "my_name"    : "Kratos_opt",
+                    "connect_to" : "run_SU2",
+                    "communication_format" : "file"
+                }
+            }
+        }
+    ],
+    "responses": [
+        {
+            "name": "efficiency",
+            "type": "remote_response_function",
+            "settings": {
+                "evaluated_model_part_names": [
+                    "WING"
+                ],
+                "primal_analysis_name": "SU2"
+            }
+        }
+    ],
+    "controls": [
+        {
+            "name": "shape_control",
+            "type": "shape.vertex_morphing_shape_control",
+            "settings": {
+                "controlled_model_part_names": [
+                    "WING"
+                ],
+                "filter_settings": {
+                    "damping_function_type": "sigmoidal",
+                    "filter_function_type": "linear",
+                    "linear_solver_settings": {},
+                    "max_nodes_in_filter_radius": 1000,
+                    "radius": 0.2,
+                    "type": "surface_explicit"
+                },
+                "fixed_model_parts": {}
+            }
+        }
+    ],
+    "algorithm_settings": {
+        "type": "algorithm_steepest_descent",
+        "settings": {
+            "echo_level": 0,
+            "line_search": {
+                "type": "const_step",
+                "init_step": 1e9,
+                "gradient_scaling": "inf_norm"
+            },
+            "conv_settings": {
+                "type": "max_iter",
+                "max_iter": 10
+            }
+        },
+        "controls": [
+            "shape_control"
+        ],
+        "objective": {
+            "response_name": "efficiency",
+            "type": "minimization",
+            "scaling": 1.0
+        }
+    },
+    "processes": {
+        "kratos_processes": {},
+        "optimization_data_processes": {
+            "output_processes": [
+                {
+                    "type": "optimization_problem_ascii_output_process",
+                    "module": "KratosMultiphysics.OptimizationApplication.processes",
+                    "settings": {
+                        "output_file_name": "summary.csv",
+                        "write_kratos_version": false,
+                        "write_time_stamp": false
+                    }
+                }
+            ]
+        }
+    }
+}

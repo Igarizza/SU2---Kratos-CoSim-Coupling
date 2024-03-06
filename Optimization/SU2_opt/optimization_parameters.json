@@ -3,101 +3,88 @@
         "parallel_type": "OpenMP",
         "echo_level": 0
     },
-    "model_parts": [
-        {
-            "settings": {
-                "model_part_name": "Structure",
-                "domain_size": 3,
-                "input_filename": "Structure"
-            }
-        }
-    ],
     "analyses": [
         {
             "name": "SU2",
-            "io_settings" : {
-                "type"       : "kratos_co_sim_io",
-                "echo_level" : 4,
-                "connect_to" : "run_SU2",
-                "communication_format" : "file"
-            }
-        },
-        {
-            "name": "Structure_static",
-            "type": "kratos_analysis_execution_policy",
-            "settings": {
+            "type": "remote_analysis_execution_policy",
+            "settings":{
                 "model_part_names": [
-                    "Structure"
+                    "WING"
                 ],
-                "analysis_module": "KratosMultiphysics.StructuralMechanicsApplication",
-                "analysis_type": "StructuralMechanicsAnalysis",
-                "analysis_settings": {
-                    "@include_json": "primal_parameters.json"
-                },
-                "analysis_output_settings": {
-                    "nodal_solution_step_data_variables": [
-                        "DISPLACEMENT"
-                    ]
+                "io_settings" : {
+                    "type"       : "kratos_co_sim_io",
+                    "echo_level" : 4,
+                    "my_name"    : "Kratos_opt",
+                    "connect_to" : "run_SU2",
+                    "communication_format" : "file"
                 }
             }
         }
     ],
     "responses": [
         {
-            "name": "drag",
-            "type": "remote_function",
-            "primal_analysis_name": "SU2",
+            "name": "efficiency",
+            "type": "remote_response_function",
             "settings": {
                 "evaluated_model_part_names": [
                     "WING"
-                ]
-            }
-        },
-        {
-            "name": "lift",
-            "type": "remote_function",
-            "primal_analysis_name": "SU2",
-            "settings": {
-                "evaluated_model_part_names": [
-                    "WING"
-                ]
+                ],
+                "primal_analysis_name": "SU2"
             }
         }
     ],
     "controls": [
         {
-            "name": "material_control",
-            "type": "material.material_properties_control",
+            "name": "shape_control",
+            "type": "shape.vertex_morphing_shape_control",
             "settings": {
-                "model_part_names": [
-                    "Structure"
+                "controlled_model_part_names": [
+                    "WING"
                 ],
-                "control_variable_name": "YOUNG_MODULUS"
+                "filter_settings": {
+                    "damping_function_type": "sigmoidal",
+                    "filter_function_type": "linear",
+                    "linear_solver_settings": {},
+                    "max_nodes_in_filter_radius": 1000,
+                    "radius": 0.2,
+                    "type": "surface_explicit"
+                },
+                "fixed_model_parts": {}
             }
         }
     ],
     "algorithm_settings": {
-        "type": "algorithm_steepest_descent",
-        "settings": {
-            "echo_level": 0,
-            "line_search": {
-                "type": "const_step",
-                "init_step": 1e9,
-                "gradient_scaling": "inf_norm"
+        "type": "NLOPT_algorithms",
+        "NLOPT_settings": {
+            "algorithm_name": "evolutionary",
+            "subsidiary_algorithm_name": "",
+            "verbosity": 0,
+            "controls_lower_bound": "",
+            "controls_upper_bound": "",
+            "stopping_criteria": {
+                "rel_obj_tol": 1e-3,
+                "abs_obj_tol": 1e-3,
+                "rel_contr_tol": 1e-3,
+                "abs_contr_tol": 1e-3,
+                "maximum_function_evalualtion": 100
             },
-            "conv_settings": {
-                "type": "max_iter",
-                "max_iter": 10
-            }
+            "algorithm_specific_settings": {}
         },
         "controls": [
-            "material_control"
+            "shape_control"
         ],
         "objective": {
-            "response_name": "drag",
+            "response_name": "mass",
             "type": "minimization",
             "scaling": 1.0
-        }
+        },
+        "constraints": [
+            {
+                "response_name": "strain_energy",
+                "type": "=",
+                "ref_value": 13.551749
+            }
+        ]
     },
     "processes": {
         "kratos_processes": {},
