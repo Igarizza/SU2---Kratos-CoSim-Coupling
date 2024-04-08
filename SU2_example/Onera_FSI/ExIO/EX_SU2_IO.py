@@ -312,7 +312,7 @@ class EX_SU2_IO():
             if self.flow_driver.GetNodeDomain(iPoint):
             # if not self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex):
                 nodeId = self.flow_driver.GetNodeGlobalIndex(iPoint)
-                newF = self.flow_driver.GetFlowLoad(self.FlowMarkerID, iVertex)
+                newF = self.flow_driver.GetMarkerFlowLoad(self.FlowMarkerID, iVertex)
                 self.FluidForceLocal[nodeId] = newF
                 LocalForce.append(newF[0])
                 LocalForce.append(newF[1])
@@ -343,11 +343,10 @@ class EX_SU2_IO():
                 disp = self.searchDisplacement(GlobalIndex,1)
                 init_coord = self.searchDisplacement(GlobalIndex,2)
                 if disp[0]==0.0 and disp[1]==0.0 and disp[2]==0.0:
-                    # print(GlobalIndex)
                     number +=1
-                self.flow_driver.SetMeshDisplacement(self.FlowMarkerID, iVertex, disp[0], disp[1], disp[2])
+                self.flow_driver.SetMarkerCustomDisplacement(self.FlowMarkerID, iVertex, disp)
                 # print(f"GlobalIndex = {GlobalIndex}, coord_x = {init_coord[0] + disp[0]}")
-        self.flow_driver.CommunicateMeshDisplacement()
+        self.flow_driver.CommunicateMeshDisplacements()
 
     def searchDisplacement(self,GlobalIndex,flag=1):
         disp = []

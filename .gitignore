@@ -5,3 +5,6 @@
 *.stl
 Abaqus_example/abaqus/ExControl/EX_OdbSurfaceReader.py
 Abaqus_example/testing.py
+
+*.DS_*
+*.lst
