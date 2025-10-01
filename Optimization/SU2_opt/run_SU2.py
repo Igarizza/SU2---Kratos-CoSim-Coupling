@@ -27,30 +27,32 @@ s_connection_name = ""
 
 @time_decorator()
 def SolveSolutionStep(info):
+    print(info)
+    adjoint = info.GetBool("adjoint")
+    if not adjoint:
+        send_msg = {'method_name': "SolveSolutionStep"}
+        for i in range(1, comm.size):
+            comm.send(send_msg, dest=i, tag=12)
 
-    send_msg = {'method_name': "SolveSolutionStep"}
-    for i in range(1, comm.size):
-        comm.send(send_msg, dest=i, tag=12)
+        EX_SU2_IO.SolveCFD()
 
-    EX_SU2_IO.SolveCFD()
+        # eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
+        eff_value = EX_SU2_IO.flow_driver.GetOutputValue("EFFICIENCY")
+        print(eff_value)
+        info_to_export = CoSimIO.Info()
+        info_to_export.SetString("connection_name", s_connection_name)
+        info_to_export.SetString("identifier", "info_exchange")
+        info_to_export.SetDouble("value", -eff_value)
+        return_info = CoSimIO.ExportInfo(info_to_export)
 
-    eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
-    info_to_export = CoSimIO.Info()
-    info_to_export.SetString("connection_name", s_connection_name)
-    info_to_export.SetString("identifier", "info_exchange")
-    info_to_export.SetDouble("value", -eff_value)
-    return_info = CoSimIO.ExportInfo(info_to_export)
+    else:
+        send_msg = {'method_name': "SolveAdjointSolutionStep"}
+        for i in range(1, comm.size):
+            comm.send(send_msg, dest=i, tag=12)
 
-    return CoSimIO.Info()
+        EX_SU2_IO.AdjointSolveCFD()
 
-def SolveAdjointSolutionStep(info):
-    send_msg = {'method_name': "SolveAdjointSolutionStep"}
-    for i in range(1, comm.size):
-        comm.send(send_msg, dest=i, tag=12)
-
-    EX_SU2_IO.AdjointSolveCFD()
-
-    ExportData(info)
+        ExportData(info)
 
     return CoSimIO.Info()
 
@@ -58,8 +60,11 @@ def SolveAdjointSolutionStep(info):
 @time_decorator()
 def OutputSolutionStep(info):
     type = info.GetString("type")
+    raise RuntimeError(type)
     if type == "value":
-        eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
+        # eff_value = EX_SU2_IO.flow_driver.Get_LiftCoeff() / EX_SU2_IO.flow_driver.Get_DragCoeff()
+        eff_value = EX_SU2_IO.flow_driver.GetOutputValue("EFFICIENCY")
+        print(eff)
         name = info.GetString("name")
         print(f"{name}: {eff_value}")
         info_to_export = CoSimIO.Info()
@@ -140,7 +145,9 @@ def ExportData(info):
 
 @time_decorator()
 def ExportMesh(info):
-    # Exporting mesh to Kratos
+
+    print("Exporting mesh to Kratos")
+    print(info)
     info = CoSimIO.Info()
     info.SetString("identifier", FlowMarkerName)
     info.SetString("connection_name", s_connection_name)
@@ -182,9 +189,6 @@ if myid == 0:
 
     fct_info.SetString("function_name", "SolveSolutionStep")
     CoSimIO.Register(fct_info,           SolveSolutionStep)
-
-    fct_info.SetString("function_name", "SolveAdjointSolutionStep")
-    CoSimIO.Register(fct_info,           SolveAdjointSolutionStep)
 
     fct_info.SetString("function_name", "OutputSolutionStep")
     CoSimIO.Register(fct_info,           OutputSolutionStep)

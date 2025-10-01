@@ -8,6 +8,8 @@ class EX_SU2_IO():
         self.config_file = config_file
         self.flow_driver = pysu2.CSinglezoneDriver(config_file, 1, comm)
         self.adjoint_flow_driver = pysu2.CSinglezoneDriver("adjoint_" + config_file, 1, comm)
+        print(dir(self.adjoint_flow_driver))
+        raise RuntimeError("Stop")
         self.flow_marker_name = flow_marker_name
         self.mesh_file = mesh_file
         self.comm = comm
@@ -38,10 +40,12 @@ class EX_SU2_IO():
         self.MPIPrint("Start set_up_variables ...")
         myid = self.comm.Get_rank()
         MPIsize = self.comm.Get_size()
-        FlowMarkerIDs = self.flow_driver.GetAllBoundaryMarkers()
-        if self.flow_marker_name in FlowMarkerIDs.keys():
-            self.FlowMarkerID = FlowMarkerIDs[self.flow_marker_name]                      # Check if the flow FSI marker exists
-            self.nLocalFluidInterfaceNodes = self.flow_driver.GetNumberVertices(self.FlowMarkerID)    # Get the number of vertices of the flow FSI marker
+
+        FlowMarkerIDs = self.flow_driver.GetMarkerTags()
+        for i, marker in enumerate(FlowMarkerIDs):
+            if self.flow_marker_name == marker:
+                self.FlowMarkerID = i
+                self.nLocalFluidInterfaceNodes = self.flow_driver.GetNumberMarkerNodes(self.FlowMarkerID)
 
         if self.nLocalFluidInterfaceNodes != 0:
             self.haveFluidInterface = True
@@ -75,8 +79,10 @@ class EX_SU2_IO():
         # Calculate the number of halo nodes on each partition
 
         for iVertex in range(self.nLocalFluidInterfaceNodes):
-            if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == True:
-                GlobalIndex = self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
+            iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+            if not self.flow_driver.GetNodeDomain(iPoint):
+            # if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == True:
+                GlobalIndex = self.flow_driver.GetNodeGlobalIndex(iPoint)
                 self.FluidLocalHaloNodeList[GlobalIndex] = iVertex
                 self.nLocalFluidInterfaceHaloNode += 1
          # Calculate the number of physical (= not halo) nodes on each partition
@@ -127,8 +133,11 @@ class EX_SU2_IO():
         FluidLocalInterfaceCoordY=[]
         FluidLocalInterfaceCoordZ=[]
         for iVertex in range(self.nLocalFluidInterfaceNodes):
-            if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
-                coords = self.flow_driver.GetInitialMeshCoord(self.FlowMarkerID, iVertex)
+            iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+            if self.flow_driver.GetNodeDomain(iPoint):
+            # if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
+                coords = self.flow_driver.InitialCoordinates().Get(iPoint)
+                # coords = self.flow_driver.GetInitialMeshCoord(self.FlowMarkerID, iVertex)
                 FluidLocalInterfaceCoord.append(coords[0])
                 FluidLocalInterfaceCoord.append(coords[1])
                 FluidLocalInterfaceCoord.append(coords[2])
@@ -160,8 +169,10 @@ class EX_SU2_IO():
         nodeIDs=[]
         self.localNodesIDs = []
         for iVertex in range (self.nLocalFluidInterfaceNodes):
-            if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
-                node_id = int(self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID,iVertex))
+            iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+            if self.flow_driver.GetNodeDomain(iPoint):
+            # if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
+                node_id = self.flow_driver.GetNodeGlobalIndex(iPoint)
                 self.localNodesIDs.append(node_id)
 
         NodeIDsList = self.comm.allgather(self.localNodesIDs)
@@ -267,8 +278,10 @@ class EX_SU2_IO():
         if self.haveFluidInterface:
             myLocalIndex = 0
             for iVertex in range (self.nLocalFluidInterfaceNodes):
-                if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
-                    GlobalIndex = self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
+                iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+                if self.flow_driver.GetNodeDomain(iPoint):
+                # if self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex) == False:
+                    GlobalIndex = self.flow_driver.GetNodeGlobalIndex(iPoint)
                     localInitDisplacementListX[GlobalIndex] =  localInitDisplacementArrayX[myLocalIndex]
                     localInitDisplacementListY[GlobalIndex] =  localInitDisplacementArrayY[myLocalIndex]
                     localInitDisplacementListZ[GlobalIndex] =  localInitDisplacementArrayZ[myLocalIndex]
@@ -298,9 +311,11 @@ class EX_SU2_IO():
         self.FluidForceLocal = {}
         # --- Get the fluid interface loads from the fluid solver and directly fill the corresponding PETSc vector ---
         for iVertex in range(self.nLocalFluidInterfaceNodes):
-            if not self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex):
-                nodeId = self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
-                newF = self.flow_driver.GetFlowLoad(self.FlowMarkerID, iVertex)
+            iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+            if self.flow_driver.GetNodeDomain(iPoint):
+            # if not self.flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex):
+                nodeId = self.flow_driver.GetNodeGlobalIndex(iPoint)
+                newF = self.flow_driver.GetMarkerFlowLoad(self.FlowMarkerID, iVertex)
                 self.FluidForceLocal[nodeId] = newF
                 LocalForce.append(newF[0])
                 LocalForce.append(newF[1])
@@ -322,9 +337,10 @@ class EX_SU2_IO():
         self.FluidForceLocal = {}
         # --- Get the fluid interface loads from the fluid solver and directly fill the corresponding PETSc vector ---
         for iVertex in range(self.nLocalFluidInterfaceNodes):
-            if not self.adjoint_flow_driver.IsAHaloNode(self.FlowMarkerID, iVertex):
-                nodeId = self.adjoint_flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
-                newF = self.adjoint_flow_driver.GetFlowLoad_Sensitivity(self.FlowMarkerID, iVertex)
+            iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+            if self.flow_driver.GetNodeDomain(iPoint):
+                nodeId = self.flow_driver.GetNodeGlobalIndex(iPoint)
+                newF = self.adjoint_flow_driver.GetMarkerFEALoadSensitivity(self.FlowMarkerID, iVertex)
                 self.FluidForceLocal[nodeId] = newF
                 LocalForce.append(newF[0])
                 LocalForce.append(newF[1])
@@ -340,7 +356,6 @@ class EX_SU2_IO():
         del LocalForce
         return self.FluidForceListGradient
 
-
     def setFluidDisplacements (self,newDisplacements):
         # --- Send the new fluid interface position to the fluid solver (on each partition, halo nodes included) ---
         myid = self.comm.Get_rank()
@@ -349,16 +364,16 @@ class EX_SU2_IO():
         number = 0
         if self.haveFluidInterface:
             for iVertex in range(self.nLocalFluidInterfaceNodes):
-                GlobalIndex = self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
+                iPoint = self.flow_driver.GetMarkerNode(self.FlowMarkerID, iVertex)
+                GlobalIndex = self.flow_driver.GetNodeGlobalIndex(iPoint)
+                # GlobalIndex = self.flow_driver.GetVertexGlobalIndex(self.FlowMarkerID, iVertex)
                 disp = self.searchDisplacement(GlobalIndex,1)
                 init_coord = self.searchDisplacement(GlobalIndex,2)
                 if disp[0]==0.0 and disp[1]==0.0 and disp[2]==0.0:
-                    # print(GlobalIndex)
                     number +=1
-                self.flow_driver.SetMeshDisplacement(self.FlowMarkerID, iVertex, disp[0], disp[1], disp[2])
-                self.adjoint_flow_driver.SetMeshDisplacement(self.FlowMarkerID, iVertex, disp[0], disp[1], disp[2])
+                self.flow_driver.SetMarkerCustomDisplacement(self.FlowMarkerID, iVertex, disp)
                 # print(f"GlobalIndex = {GlobalIndex}, coord_x = {init_coord[0] + disp[0]}")
-        self.flow_driver.CommunicateMeshDisplacement()
+        self.flow_driver.CommunicateMeshDisplacements()
 
     def searchDisplacement(self,GlobalIndex,flag=1):
         disp = []

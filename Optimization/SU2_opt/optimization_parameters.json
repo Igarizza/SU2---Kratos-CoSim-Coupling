@@ -7,16 +7,16 @@
         {
             "name": "SU2",
             "type": "remote_analysis_execution_policy",
-            "settings":{
+            "settings": {
                 "model_part_names": [
                     "WING"
                 ],
-                "io_settings" : {
-                    "type"       : "kratos_co_sim_io",
-                    "echo_level" : 4,
-                    "my_name"    : "Kratos_opt",
-                    "connect_to" : "run_SU2",
-                    "communication_format" : "file"
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "my_name": "Kratos_opt",
+                    "connect_to": "run_SU2",
+                    "communication_format": "file"
                 }
             }
         }
@@ -41,50 +41,46 @@
                 "controlled_model_part_names": [
                     "WING"
                 ],
+                "output_all_fields": true,
                 "filter_settings": {
-                    "damping_function_type": "sigmoidal",
-                    "filter_function_type": "linear",
-                    "linear_solver_settings": {},
-                    "max_nodes_in_filter_radius": 1000,
-                    "radius": 0.2,
-                    "type": "surface_explicit"
-                },
-                "fixed_model_parts": {}
+                    "filter_type": "explicit_filter",
+                    "filter_function_type": "cosine",
+                    "max_nodes_in_filter_radius": 100000,
+                    "filter_radius_settings": {
+                        "filter_radius_type": "constant",
+                        "filter_radius": 0.2
+                    },
+                    "filtering_boundary_conditions": {
+                        "damping_type": "nearest_entity",
+                        "damping_function_type": "cosine",
+                        "damped_model_part_settings": {}
+                    }
+                }
             }
         }
     ],
     "algorithm_settings": {
-        "type": "NLOPT_algorithms",
-        "NLOPT_settings": {
-            "algorithm_name": "evolutionary",
-            "subsidiary_algorithm_name": "",
-            "verbosity": 0,
-            "controls_lower_bound": "",
-            "controls_upper_bound": "",
-            "stopping_criteria": {
-                "rel_obj_tol": 1e-3,
-                "abs_obj_tol": 1e-3,
-                "rel_contr_tol": 1e-3,
-                "abs_contr_tol": 1e-3,
-                "maximum_function_evalualtion": 100
+        "type": "algorithm_steepest_descent",
+        "settings": {
+            "echo_level": 0,
+            "line_search": {
+                "type": "const_step",
+                "init_step": 1e-3,
+                "gradient_scaling": "l2_norm"
             },
-            "algorithm_specific_settings": {}
+            "conv_settings": {
+                "type": "max_iter",
+                "max_iter": 1
+            }
         },
         "controls": [
             "shape_control"
         ],
         "objective": {
-            "response_name": "mass",
+            "response_name": "efficiency",
             "type": "minimization",
             "scaling": 1.0
-        },
-        "constraints": [
-            {
-                "response_name": "strain_energy",
-                "type": "=",
-                "ref_value": 13.551749
-            }
-        ]
+        }
     },
     "processes": {
         "kratos_processes": {},
@@ -97,6 +93,23 @@
                         "output_file_name": "summary.csv",
                         "write_kratos_version": false,
                         "write_time_stamp": false
+                    }
+                },
+                {
+                    "type": "optimization_problem_vtu_output_process",
+                    "module": "KratosMultiphysics.OptimizationApplication.processes",
+                    "settings": {
+                        "file_name": "wing_<step>",
+                        "file_format": "binary",
+                        "output_path": "Optimization_Results",
+                        "save_output_files_in_folder": true,
+                        "write_deformed_configuration": false,
+                        "list_of_output_components": [
+                            "all"
+                        ],
+                        "output_precision": 7,
+                        "output_interval": 1,
+                        "echo_level": 0
                     }
                 }
             ]

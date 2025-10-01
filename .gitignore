@@ -9,3 +9,7 @@ Abaqus_example/testing.py
 
 *.DS_*
 *.lst
+
+*.zip
+fromSusana/
+OpenFoam_Kratos/

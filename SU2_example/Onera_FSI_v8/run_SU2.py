@@ -18,7 +18,7 @@ myid = comm.Get_rank()
 ConfigFile = "inv_ONERAM6.cfg"
 FlowMarkerName = "WING"
 mesh_file_name = "mesh_ONERAM6_inv_ffd.su2"
-EX_SU2_IO = EX_SU2_IO(ConfigFile, FlowMarkerName, mesh_file_name, comm)
+EX_SU2_IO = (ConfigFile, FlowMarkerName, mesh_file_name, comm)
 
 
 ### CoSIM Register

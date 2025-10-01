@@ -16612,7 +16612,7 @@ Begin Elements Element2D3N// GUI group identifier: Fluid
     10488          1       4881       4533       5163 
 End Elements
 
-Begin Conditions WallCondition2D2N// GUI group identifier: _HIDDEN__SKIN_
+Begin Conditions LineCondition2D2N// GUI group identifier: _HIDDEN__SKIN_
     1 0 6105 6102
     2 0 6102 6096
     3 0 6096 6086

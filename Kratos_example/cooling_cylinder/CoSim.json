@@ -12,9 +12,9 @@
         "predictors": [],
         "data_transfer_operators": {
             "mapper": {
-                "type": "kratos_mapping",
+                "type": "kratos_mapping_with_debug",
                 "mapper_settings": {
-                    "mapper_type": "nearest_neighbor"
+                    "mapper_type": "nearest_element"
                 }
             }
         },

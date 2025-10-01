@@ -1,0 +1,208 @@
+{
+    "problem_data": {
+        "problem_name": "cube_quadratic_tets",
+        "parallel_type": "OpenMP",
+        "echo_level": 1,
+        "start_time": 0.0,
+        "end_time": 1.0
+    },
+    "modelers" : [
+        {
+            "name" : "Modelers.All.CreateEntitiesFromGeometriesModeler",
+            "parameters" : {
+                "elements_list" : [
+                    {
+                        "model_part_name" : "root",
+                        "element_name" : "SmallDisplacementElement3D10N"
+                    }
+                ],
+                "conditions_list" : [
+                    {
+                        "model_part_name" : "root",
+                        "condition_name" : "PointLoadCondition3D1N"
+                    }
+                ]
+            }
+        }
+    ],
+    "solver_settings": {
+        "time_stepping": {
+            "time_step": 1.0
+        },
+        "solver_type": "Static",
+        "model_part_name": "root",
+        "domain_size": 3,
+        "echo_level": 1,
+        "analysis_type": "linear",
+        "model_import_settings": {
+            "input_type": "use_input_model_part"
+        },
+        "material_import_settings": {
+            "materials_filename": "materials.json"
+        },
+        "line_search": false,
+        "convergence_criterion": "residual_criterion",
+        "displacement_relative_tolerance": 0.0001,
+        "displacement_absolute_tolerance": 1e-9,
+        "residual_relative_tolerance": 0.0001,
+        "residual_absolute_tolerance": 1e-9,
+        "max_iteration": 1,
+        "use_old_stiffness_in_first_iteration": false,
+        "rotation_dofs": false,
+        "volumetric_strain_dofs": false,
+        "builder_and_solver_settings" : {
+            "advanced_settings" : {
+                "diagonal_values_for_dirichlet_dofs" : "use_diagonal_norm"
+            }
+        },
+        "linear_solver_settings" : {
+            "@include_json" : "solvers/hierarchical_solver.json"
+        }
+    },
+    "processes": {
+        "constraints_process_list": [
+            {
+                "python_module": "assign_vector_variable_process",
+                "kratos_module": "KratosMultiphysics",
+                "process_name": "AssignVectorVariableProcess",
+                "Parameters": {
+                    "model_part_name": "root.top",
+                    "variable_name": "DISPLACEMENT",
+                    "interval": [0.0, "End"],
+                    "constrained": [true, true, false],
+                    "value": [0.0, 0.0, null]
+                }
+            },
+            {
+                "python_module": "assign_vector_variable_process",
+                "kratos_module": "KratosMultiphysics",
+                "process_name": "AssignVectorVariableProcess",
+                "Parameters": {
+                    "model_part_name": "root.bottom",
+                    "variable_name": "DISPLACEMENT",
+                    "interval": [0.0, "End"],
+                    "constrained": [false, false, true],
+                    "value": [null, null, 0.0]
+                }
+            },
+            {
+                "python_module": "assign_vector_variable_process",
+                "kratos_module": "KratosMultiphysics",
+                "process_name": "AssignVectorVariableProcess",
+                "Parameters": {
+                    "model_part_name": "root.left",
+                    "variable_name": "DISPLACEMENT",
+                    "interval": [0.0, "End"],
+                    "constrained": [false, true, false],
+                    "value": [null, 0.0, null]
+                }
+            },
+            {
+                "python_module": "assign_vector_variable_process",
+                "kratos_module": "KratosMultiphysics",
+                "process_name": "AssignVectorVariableProcess",
+                "Parameters": {
+                    "model_part_name": "root.rear",
+                    "variable_name": "DISPLACEMENT",
+                    "interval": [0.0, "End"],
+                    "constrained": [true, false, false],
+                    "value": [0.0, null, null]
+                }
+            }
+            ,{
+                "Parameters": {
+                  "dependent_model_part_name": "root.top_40",
+                  "independent_model_part_name": "root.external_node"
+                },
+                "process_name": "MakeMultifreedomConstraintsProcess",
+                "python_module": "make_multifreedom_constraints_process"
+              }
+        ],
+        "loads_process_list": [
+            {
+                "python_module": "assign_vector_by_direction_to_condition_process",
+                "kratos_module": "KratosMultiphysics",
+                "process_name": "AssignVectorByDirectionToConditionProcess",
+                "Parameters": {
+                    "model_part_name": "root.external_node",
+                    "variable_name": "POINT_LOAD",
+                    "interval": [0.0, "End"],
+                    "modulus": 3000000.0,
+                    "direction": [0.0, 0.0, -1]
+                }
+            }
+        ],
+        "list_other_processes": [
+            {
+                "python_module" : "make_point_load_conditions_process",
+                "process_name" : "MakePointLoadConditionsProcess",
+                "Parameters" : {
+                    "model_part_name" : "root.external_node"
+                }
+            },
+            {
+                "python_module" : "KratosMultiphysics.integration_values_extrapolation_to_nodes_process",
+                "process_name" : "IntegrationValuesExtrapolationToNodesProcess",
+                "Parameters" : {
+                    "model_part_name"            : "root",
+                    "list_of_variables"          : ["VON_MISES_STRESS"],
+                    "extrapolate_non_historical" : true
+                }
+            },
+            {
+                "kratos_module" : "KratosMultiphysics",
+                "python_module" : "multipoint_constraint_to_element_process",
+                "process_name" : "MultipointConstraintToElementProcess",
+                "Parameters" : {
+                    "input_model_part_name"      : "root",
+                    "output_model_part_name"     : "mpcs",
+                    "interval"                   : [-1.0, "End"]
+                }
+            }
+        ]
+    },
+    "output_processes": {
+        "hdf5_output": [
+            {
+                "kratos_module" : "KratosMultiphysics.HDF5Application",
+                "python_module" : "single_mesh_temporal_output_process",
+                "process_name" : "SingleMeshTemporalOutputProcess",
+                "Parameters" : {
+                    "model_part_name" : "root",
+                    "file_settings" : {
+                        "file_name" : "structure_<time>.h5",
+                        "file_access_mode" : "truncate"
+                    },
+                    "nodal_solution_step_data_settings" : {
+                        "list_of_variables" : ["DISPLACEMENT", "REACTION"]
+                    },
+                    "nodal_data_value_settings" : {
+                        "list_of_variables" : ["VON_MISES_STRESS"]
+                    },
+                    "nodal_flag_value_settings" : {
+                        "list_of_variables" : ["MASTER", "SLAVE"]
+                    },
+                    "condition_data_value_settings" : {
+                        "list_of_variables" : ["POINT_LOAD"]
+                    }
+                }
+            },
+            {
+                "kratos_module" : "KratosMultiphysics.HDF5Application",
+                "python_module" : "single_mesh_temporal_output_process",
+                "process_name" : "SingleMeshTemporalOutputProcess",
+                "Parameters" : {
+                    "model_part_name" : "mpcs",
+                    "file_settings" : {
+                        "file_name" : "mpcs_<time>.h5",
+                        "file_access_mode" : "truncate"
+                    },
+                    "element_data_value_settings" : {
+                        "list_of_variables" : ["SCALAR_LAGRANGE_MULTIPLIER"]
+                    }
+                }
+            }
+        ]
+    },
+    "analysis_stage": "KratosMultiphysics.StructuralMechanicsApplication.structural_mechanics_analysis"
+}
