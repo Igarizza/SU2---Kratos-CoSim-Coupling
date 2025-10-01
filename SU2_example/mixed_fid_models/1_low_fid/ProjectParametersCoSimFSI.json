@@ -23,38 +23,57 @@
         "convergence_accelerators": [
             {
                 "type": "aitken",
-                "solver": "fluid",
-                "data_name": "disp_y"
+                "solver": "low_fid_fluid",
+                "data_name": "pitch_angle"
             }
         ],
         "convergence_criteria": [
             {
                 "type": "relative_norm_previous_residual",
-                "solver": "fluid",
-                "data_name": "disp_y",
+                "solver": "low_fid_fluid",
+                "data_name": "pitch_angle",
                 "abs_tolerance": 1e-7,
                 "rel_tolerance": 1e-5
             }
         ],
         "coupling_sequence": [
             {
-                "name": "fluid",
+                "name": "low_fid_fluid",
                 "output_data_list": [],
                 "input_data_list": []
+            },
+            {
+                "name": "spring_structure",
+                "input_data_list": [
+                    {
+                        "data": "lift_force",
+                        "from_solver": "low_fid_fluid",
+                        "from_solver_data": "lift_force",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ],
+                "output_data_list": [
+                    {
+                        "data": "pitch_angle",
+                        "to_solver": "low_fid_fluid",
+                        "to_solver_data": "pitch_angle",
+                        "data_transfer_operator": "direct_transfer"
+                    }
+                ]
             }
         ],
         "solvers": {
-            "fluid": {
+            "low_fid_fluid": {
                 "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
                 "solver_wrapper_settings": {
                     "export_data": [
-                        "disp_y"
+                        "pitch_angle"
                     ],
                     "import_data": [
-                        "force_y"
+                        "lift_force"
                     ],
                     "import_meshes": [
-                        "S_Node"
+                        "single_node_mesh_f"
                     ]
                 },
                 "io_settings": {
@@ -64,13 +83,45 @@
                     "communication_format": "file"
                 },
                 "data": {
-                    "disp_y": {
-                        "model_part_name": "S_Node",
+                    "pitch_angle": {
+                        "model_part_name": "single_node_mesh_f",
                         "variable_name": "SCALAR_DISPLACEMENT",
                         "location": "node_historical"
                     },
-                    "force_y": {
-                        "model_part_name": "S_Node",
+                    "lift_force": {
+                        "model_part_name": "single_node_mesh_f",
+                        "variable_name": "SCALAR_FORCE",
+                        "location": "node_historical"
+                    }
+                }
+            },
+            "spring_structure": {
+                "type": "solver_wrappers.external.remote_controlled_solver_wrapper",
+                "solver_wrapper_settings": {
+                    "export_data": [
+                        "lift_force"
+                    ],
+                    "import_data": [
+                        "pitch_angle"
+                    ],
+                    "import_meshes": [
+                        "single_node_mesh_s"
+                    ]
+                },
+                "io_settings": {
+                    "type": "kratos_co_sim_io",
+                    "echo_level": 4,
+                    "connect_to": "run_structure",
+                    "communication_format": "file"
+                },
+                "data": {
+                    "pitch_angle": {
+                        "model_part_name": "single_node_mesh_s",
+                        "variable_name": "SCALAR_DISPLACEMENT",
+                        "location": "node_historical"
+                    },
+                    "lift_force": {
+                        "model_part_name": "single_node_mesh_s",
                         "variable_name": "SCALAR_FORCE",
                         "location": "node_historical"
                     }

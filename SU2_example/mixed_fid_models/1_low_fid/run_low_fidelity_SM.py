@@ -121,9 +121,9 @@ def ImportMesh(info):
 def ExportMesh(info):
     settings = CoSimIO.Info()
     settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "S_Node_2")
+    settings.SetString("identifier", "single_node_mesh_s")
     model = Kratos.Model()
-    model_part = model.CreateModelPart("S_Node_2")
+    model_part = model.CreateModelPart("single_node_mesh_s")
     model_part.CreateNewNode(1, 0.0, 0.0, 0.0)
     return_info = CoSimIO.ExportMesh(settings, model_part)
     return CoSimIO.Info()
@@ -131,7 +131,7 @@ def ExportMesh(info):
 # Connection Settings
 settings = CoSimIO.Info()
 settings.SetString("my_name", "run_structure")
-settings.SetString("connect_to", "structure")
+settings.SetString("connect_to", "spring_structure")
 settings.SetInt("echo_level", 1)
 settings.SetString("communication_format", "file")
 settings.SetString("version", "1.25")

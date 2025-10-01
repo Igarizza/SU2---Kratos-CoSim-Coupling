@@ -24,6 +24,14 @@ class Variables:
     L_in_N = 0.0
     phi_in_rad = 0.0
 
+    file_name: str = "results.csv"
+    # check if file exists, if yes remove it
+    import os
+    if os.path.exists(file_name):
+        os.remove(file_name)
+    with open(file_name, 'a') as f:
+        f.write("L_in_N, C_L, phi, psi, u, r\n")
+
 var = Variables()
 
 @time_decorator()
@@ -73,6 +81,9 @@ def SolveSolutionStep(info):
     L_in_N = q * S * C_L
     var.L_in_N = L_in_N
     print(f"fluid::Computed L_in_N = {var.L_in_N}")
+    # write results to file
+    with open(var.file_name, 'a') as f:
+        f.write(f"{L_in_N}, {C_L}, {phi}, {psi}, {u}, {r}\n")
     return CoSimIO.Info()
 
 @time_decorator()
@@ -134,9 +145,9 @@ def ImportMesh(info):
 def ExportMesh(info):
     settings = CoSimIO.Info()
     settings.SetString("connection_name", s_connection_name)
-    settings.SetString("identifier", "S_Node")
+    settings.SetString("identifier", "single_node_mesh_f")
     model = Kratos.Model()
-    model_part = model.CreateModelPart("S_Node")
+    model_part = model.CreateModelPart("single_node_mesh_f")
     model_part.CreateNewNode(1, 0.0, 0.0, 0.0)
     return_info = CoSimIO.ExportMesh(settings, model_part)
     return CoSimIO.Info()
@@ -144,7 +155,7 @@ def ExportMesh(info):
 # Connection Settings
 settings = CoSimIO.Info()
 settings.SetString("my_name", "run_fluid")
-settings.SetString("connect_to", "fluid")
+settings.SetString("connect_to", "low_fid_fluid")
 settings.SetInt("echo_level", 1)
 settings.SetString("version", "1.25")
 settings.SetString("communication_format", "file")
